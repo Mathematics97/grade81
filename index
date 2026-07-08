@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Plug It In — Substitution Worksheet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root{
+  --paper:#faf9f4;
+  --grid:#e4e0d4;
+  --ink:#20241f;
+  --ink-soft:#5b5f57;
+  --easy:#e07a3f;
+  --easy-soft:#fbe6d6;
+  --medium:#2b6f6a;
+  --medium-soft:#dcece9;
+  --good:#2f8f4e;
+  --good-soft:#e4f4e6;
+  --bad:#c5493a;
+  --bad-soft:#fbe4e0;
+  --card:#ffffff;
+  --line:#d9d5c8;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  background:
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0/28px 28px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/28px 28px,
+    var(--paper);
+  color:var(--ink);
+  font-family:'Inter', sans-serif;
+  padding:0 0 80px;
+}
+
+.wrap{ max-width:900px; margin:0 auto; padding:0 24px; }
+
+header{
+  padding:48px 24px 28px;
+  text-align:left;
+  border-bottom:3px solid var(--ink);
+  max-width:900px;
+  margin:0 auto;
+}
+
+.eyebrow{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:13px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin:0 0 10px;
+}
+
+h1{
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:700;
+  font-size:clamp(34px,6vw,52px);
+  line-height:1.02;
+  margin:0 0 14px;
+  letter-spacing:-0.01em;
+}
+
+h1 .fx{ color:var(--easy); }
+
+.sub{
+  font-size:16px;
+  color:var(--ink-soft);
+  max-width:560px;
+  line-height:1.5;
+  margin:0 0 22px;
+}
+
+.machine{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:18px;
+  font-weight:600;
+  flex-wrap:wrap;
+}
+.chip{
+  padding:8px 14px;
+  border-radius:8px;
+  border:2px solid var(--ink);
+  background:var(--card);
+}
+.chip.var{ color:var(--easy); border-color:var(--easy); }
+.chip.val{ color:var(--medium); border-color:var(--medium); background:var(--medium-soft); }
+.arrow{ font-size:20px; color:var(--ink-soft); }
+
+.tabs{
+  display:flex;
+  gap:0;
+  max-width:900px;
+  margin:0 auto;
+  border-bottom:3px solid var(--ink);
+}
+.tab{
+  flex:1;
+  padding:16px 20px;
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:700;
+  font-size:16px;
+  text-align:center;
+  cursor:pointer;
+  background:var(--paper);
+  border:none;
+  border-right:1px solid var(--line);
+  color:var(--ink-soft);
+  position:relative;
+  transition:background .15s ease, color .15s ease;
+}
+.tab:last-child{ border-right:none; }
+.tab .count{
+  font-family:'IBM Plex Mono', monospace;
+  font-weight:500;
+  font-size:12px;
+  display:block;
+  margin-top:2px;
+}
+.tab[data-level="easy"].active{ background:var(--easy); color:#fff; }
+.tab[data-level="medium"].active{ background:var(--medium); color:#fff; }
+.tab:not(.active):hover{ background:#f0eee5; }
+.tab:focus-visible{ outline:3px solid var(--ink); outline-offset:-3px; }
+
+.progress-row{
+  max-width:900px;
+  margin:20px auto 0;
+  padding:0 24px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.progress-track{
+  flex:1;
+  height:10px;
+  border-radius:6px;
+  background:var(--grid);
+  border:1.5px solid var(--ink);
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:var(--good);
+  transition:width .3s ease;
+}
+.score-text{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:14px;
+  font-weight:600;
+  white-space:nowrap;
+}
+
+.grid{
+  max-width:900px;
+  margin:26px auto 0;
+  padding:0 24px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(260px,1fr));
+  gap:16px;
+}
+
+.card{
+  background:var(--card);
+  border:2px solid var(--ink);
+  border-radius:12px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  box-shadow:4px 4px 0 rgba(32,36,31,0.08);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.card.correct{ border-color:var(--good); background:var(--good-soft); }
+.card.incorrect{ border-color:var(--bad); background:var(--bad-soft); }
+
+.qnum{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  color:var(--ink-soft);
+  letter-spacing:.06em;
+}
+
+.expr{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:22px;
+  font-weight:600;
+}
+
+.given{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:14px;
+  color:var(--ink-soft);
+}
+.given b{ color:var(--ink); }
+
+.answer-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-top:auto;
+}
+input[type="text"]{
+  flex:1;
+  min-width:0;
+  padding:10px 12px;
+  border:2px solid var(--ink);
+  border-radius:8px;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:16px;
+  background:#fff;
+}
+input[type="text"]:focus-visible{ outline:3px solid var(--medium); outline-offset:1px; }
+.card.correct input, .card.incorrect input{ background:#fff; }
+
+button.check{
+  padding:10px 14px;
+  border-radius:8px;
+  border:2px solid var(--ink);
+  background:var(--ink);
+  color:#fff;
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+button.check:hover{ background:#3a3f36; }
+button.check:focus-visible{ outline:3px solid var(--easy); outline-offset:2px; }
+
+.feedback{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:13px;
+  font-weight:600;
+  min-height:18px;
+}
+.feedback.good{ color:var(--good); }
+.feedback.bad{ color:var(--bad); }
+
+.solution{
+  font-size:13px;
+  color:var(--ink-soft);
+  background:#f4f2ea;
+  border-left:3px solid var(--line);
+  padding:8px 10px;
+  border-radius:0 6px 6px 0;
+  display:none;
+  line-height:1.5;
+}
+.solution.show{ display:block; }
+
+.showsol-btn{
+  background:none;
+  border:none;
+  color:var(--ink-soft);
+  font-family:'Inter';
+  font-size:12px;
+  text-decoration:underline;
+  cursor:pointer;
+  padding:0;
+  text-align:left;
+  width:fit-content;
+}
+
+.footer-bar{
+  max-width:900px;
+  margin:34px auto 0;
+  padding:0 24px;
+  display:flex;
+  gap:12px;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.check-all{
+  padding:14px 26px;
+  border-radius:10px;
+  border:2px solid var(--ink);
+  background:var(--easy);
+  color:#fff;
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:700;
+  font-size:15px;
+  cursor:pointer;
+  box-shadow:3px 3px 0 rgba(32,36,31,0.15);
+}
+.check-all:hover{ transform:translateY(-1px); }
+.reset-btn{
+  padding:14px 22px;
+  border-radius:10px;
+  border:2px solid var(--line);
+  background:transparent;
+  color:var(--ink-soft);
+  font-family:'Inter';
+  font-weight:600;
+  font-size:14px;
+  cursor:pointer;
+}
+.reset-btn:hover{ border-color:var(--ink); color:var(--ink); }
+
+.banner{
+  max-width:900px;
+  margin:22px auto 0;
+  padding:0 24px;
+}
+.banner-inner{
+  border:2px dashed var(--ink);
+  border-radius:12px;
+  padding:16px 20px;
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:600;
+  font-size:15px;
+  display:none;
+  align-items:center;
+  gap:10px;
+}
+.banner-inner.show{ display:flex; }
+.banner-inner.great{ background:var(--good-soft); border-color:var(--good); color:#215c37; }
+.banner-inner.okay{ background:var(--medium-soft); border-color:var(--medium); color:#1c4c48; }
+
+@media (max-width:520px){
+  header{ padding:36px 18px 22px; }
+  .grid{ grid-template-columns:1fr; padding:0 18px; }
+  .tabs, .progress-row, .footer-bar, .banner{ padding-left:18px; padding-right:18px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">Grade 8 · Algebra</p>
+  <h1>Plug It <span class="fx">In</span></h1>
+  <p class="sub">A substitution machine: feed each expression a value for its variable, do the arithmetic, and see if your output matches.</p>
+  <div class="machine">
+    <span class="chip var">x</span>
+    <span class="arrow">→</span>
+    <span class="chip val">3</span>
+    <span class="arrow">→</span>
+    <span class="chip">2x + 1 = 7</span>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-level="easy" onclick="switchLevel('easy')">
+    Easy
+    <span class="count" id="count-easy">0 / 10 solved</span>
+  </button>
+  <button class="tab" data-level="medium" onclick="switchLevel('medium')">
+    Medium
+    <span class="count" id="count-medium">0 / 10 solved</span>
+  </button>
+</div>
+
+<div class="progress-row">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="score-text" id="scoreText">0 / 20 correct</div>
+</div>
+
+<div class="banner">
+  <div class="banner-inner" id="banner"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="footer-bar">
+  <button class="check-all" onclick="checkAll()">Check my work</button>
+  <button class="reset-btn" onclick="resetAll()">Clear all answers</button>
+</div>
+
+<script>
+const EASY = [
+  { expr:"3x", vars:{x:4}, ans:12, steps:"Replace x with 4: 3 × 4 = 12" },
+  { expr:"x + 7", vars:{x:5}, ans:12, steps:"Replace x with 5: 5 + 7 = 12" },
+  { expr:"10 − x", vars:{x:3}, ans:7, steps:"Replace x with 3: 10 − 3 = 7" },
+  { expr:"2x + 1", vars:{x:6}, ans:13, steps:"Replace x with 6: 2 × 6 = 12, then 12 + 1 = 13" },
+  { expr:"x ÷ 2", vars:{x:8}, ans:4, steps:"Replace x with 8: 8 ÷ 2 = 4" },
+  { expr:"5x − 3", vars:{x:2}, ans:7, steps:"Replace x with 2: 5 × 2 = 10, then 10 − 3 = 7" },
+  { expr:"4 + x", vars:{x:9}, ans:13, steps:"Replace x with 9: 4 + 9 = 13" },
+  { expr:"3x − 2", vars:{x:5}, ans:13, steps:"Replace x with 5: 3 × 5 = 15, then 15 − 2 = 13" },
+  { expr:"x + x", vars:{x:7}, ans:14, steps:"Replace both x's with 7: 7 + 7 = 14" },
+  { expr:"6x", vars:{x:3}, ans:18, steps:"Replace x with 3: 6 × 3 = 18" },
+];
+
+const MEDIUM = [
+  { expr:"2a + 3b", vars:{a:4,b:2}, ans:14, steps:"a=4, b=2 → 2×4 + 3×2 = 8 + 6 = 14" },
+  { expr:"x² − 4", vars:{x:5}, ans:21, steps:"x=5 → 5² = 25, then 25 − 4 = 21" },
+  { expr:"3(x + 2)", vars:{x:-1}, ans:3, steps:"x=−1 → (−1 + 2) = 1, then 3 × 1 = 3" },
+  { expr:"a² + b", vars:{a:3,b:-2}, ans:7, steps:"a=3, b=−2 → 3² = 9, then 9 + (−2) = 7" },
+  { expr:"(x + y) ÷ 2", vars:{x:6,y:4}, ans:5, steps:"x=6, y=4 → (6+4) = 10, then 10 ÷ 2 = 5" },
+  { expr:"−3x + 7", vars:{x:-2}, ans:13, steps:"x=−2 → −3 × (−2) = 6, then 6 + 7 = 13" },
+  { expr:"x² + y²", vars:{x:2,y:3}, ans:13, steps:"x=2, y=3 → 2²=4, 3²=9, then 4 + 9 = 13" },
+  { expr:"5(a − b)", vars:{a:6,b:2}, ans:20, steps:"a=6, b=2 → (6−2) = 4, then 5 × 4 = 20" },
+  { expr:"2x − 3y", vars:{x:-1,y:2}, ans:-8, steps:"x=−1, y=2 → 2×(−1) = −2, 3×2 = 6, then −2 − 6 = −8" },
+  { expr:"4x² − x", vars:{x:2}, ans:14, steps:"x=2 → 4×2² = 4×4 = 16, then 16 − 2 = 14" },
+];
+
+let currentLevel = 'easy';
+const state = { easy:{}, medium:{} };
+
+function buildCards(level, data){
+  return data.map((q,i)=>{
+    const givenText = Object.entries(q.vars).map(([k,v])=>`${k} = <b>${v}</b>`).join(', ');
+    return `
+    <div class="card" id="card-${level}-${i}">
+      <div class="qnum">${level.toUpperCase()} · Q${i+1}</div>
+      <div class="expr">${q.expr}</div>
+      <div class="given">when ${givenText}</div>
+      <div class="answer-row">
+        <input type="text" inputmode="numeric" placeholder="your answer"
+          id="input-${level}-${i}"
+          onkeydown="if(event.key==='Enter') checkOne('${level}',${i})">
+        <button class="check" onclick="checkOne('${level}',${i})">Check</button>
+      </div>
+      <div class="feedback" id="fb-${level}-${i}"></div>
+      <button class="showsol-btn" onclick="toggleSolution('${level}',${i})" id="solbtn-${level}-${i}">Show worked solution</button>
+      <div class="solution" id="sol-${level}-${i}">${q.steps}</div>
+    </div>`;
+  }).join('');
+}
+
+function render(){
+  document.getElementById('grid').innerHTML =
+    currentLevel === 'easy' ? buildCards('easy', EASY) : buildCards('medium', MEDIUM);
+  // restore any prior state visuals
+  Object.keys(state[currentLevel]).forEach(i=>{
+    const r = state[currentLevel][i];
+    const input = document.getElementById(`input-${currentLevel}-${i}`);
+    if(input) input.value = r.userValue;
+    applyCardVisual(currentLevel, i, r.correct);
+  });
+  updateScore();
+}
+
+function switchLevel(level){
+  currentLevel = level;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.level===level));
+  render();
+}
+
+function normalize(str){
+  return str.trim().replace(/\s+/g,'').replace(/−/g,'-');
+}
+
+function checkOne(level, i){
+  const data = level==='easy' ? EASY : MEDIUM;
+  const q = data[i];
+  const input = document.getElementById(`input-${level}-${i}`);
+  const raw = input.value;
+  const val = parseFloat(normalize(raw));
+  const correct = !isNaN(val) && val === q.ans;
+  state[level][i] = { userValue: raw, correct: raw.trim()!=='' ? correct : null };
+  const fb = document.getElementById(`fb-${level}-${i}`);
+  if(raw.trim()===''){
+    fb.textContent = '';
+    fb.className = 'feedback';
+  } else if(correct){
+    fb.textContent = '✓ Correct!';
+    fb.className = 'feedback good';
+  } else {
+    fb.textContent = '✗ Not quite — try again or view the solution.';
+    fb.className = 'feedback bad';
+  }
+  applyCardVisual(level, i, state[level][i].correct);
+  updateScore();
+}
+
+function applyCardVisual(level, i, correct){
+  const card = document.getElementById(`card-${level}-${i}`);
+  if(!card) return;
+  card.classList.remove('correct','incorrect');
+  if(correct === true) card.classList.add('correct');
+  else if(correct === false) card.classList.add('incorrect');
+}
+
+function toggleSolution(level, i){
+  const sol = document.getElementById(`sol-${level}-${i}`);
+  const btn = document.getElementById(`solbtn-${level}-${i}`);
+  const showing = sol.classList.toggle('show');
+  btn.textContent = showing ? 'Hide worked solution' : 'Show worked solution';
+}
+
+function checkAll(){
+  const data = currentLevel==='easy' ? EASY : MEDIUM;
+  data.forEach((_,i)=>checkOne(currentLevel, i));
+  updateBanner();
+}
+
+function updateScore(){
+  let solvedEasy=0, correctEasy=0, solvedMed=0, correctMed=0;
+  Object.values(state.easy).forEach(r=>{ if(r.correct!==null){ solvedEasy++; if(r.correct) correctEasy++; }});
+  Object.values(state.medium).forEach(r=>{ if(r.correct!==null){ solvedMed++; if(r.correct) correctMed++; }});
+  document.getElementById('count-easy').textContent = `${correctEasy} / 10 solved`;
+  document.getElementById('count-medium').textContent = `${correctMed} / 10 solved`;
+  const totalCorrect = correctEasy + correctMed;
+  const totalSolved = solvedEasy + solvedMed;
+  document.getElementById('scoreText').textContent = `${totalCorrect} / 20 correct`;
+  document.getElementById('progressFill').style.width = `${(totalSolved/20)*100}%`;
+}
+
+function updateBanner(){
+  const totalCorrect = Object.values(state.easy).filter(r=>r.correct).length +
+                        Object.values(state.medium).filter(r=>r.correct).length;
+  const totalAttempted = Object.values(state.easy).filter(r=>r.correct!==null).length +
+                          Object.values(state.medium).filter(r=>r.correct!==null).length;
+  const banner = document.getElementById('banner');
+  if(totalAttempted === 0){ banner.className = 'banner-inner'; return; }
+  banner.classList.add('show');
+  if(totalCorrect === totalAttempted && totalAttempted >= 10){
+    banner.className = 'banner-inner show great';
+    banner.textContent = `🎯 ${totalCorrect}/${totalAttempted} correct — nice substitution skills!`;
+  } else {
+    banner.className = 'banner-inner show okay';
+    banner.textContent = `You've got ${totalCorrect}/${totalAttempted} correct so far. Check the worked solutions on any tricky ones.`;
+  }
+}
+
+function resetAll(){
+  state.easy = {}; state.medium = {};
+  document.getElementById('banner').className = 'banner-inner';
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>
